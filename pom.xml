@@ -11,6 +11,8 @@
         <telegram-bot-version>4.1.2</telegram-bot-version>
         <rometools-version>1.5.0</rometools-version>
         <h2-version>1.4.197</h2-version>
+        <ffmpeg-wrapper-version>0.6.2</ffmpeg-wrapper-version>
+        <mp3spi-version>1.9.5-1</mp3spi-version>
     </properties>
 
     <dependencies>
@@ -25,6 +27,19 @@
             <artifactId>rome</artifactId>
             <version>${rometools-version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>mp3spi</artifactId>
+            <version>${mp3spi-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.bramp.ffmpeg</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>${ffmpeg-wrapper-version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>com.h2database</groupId>

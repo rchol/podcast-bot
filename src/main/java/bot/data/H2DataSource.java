@@ -51,6 +51,17 @@ public class H2DataSource implements SimpleDataSource {
         }
     }
 
+    @Override
+    public long executeUpdate(String query) {
+        try {
+            Statement st = thread.get().createStatement();
+            st.executeUpdate(query);
+            return 1L;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void closeConn(Connection c){
         try {
             if (c != null) {
@@ -58,11 +69,6 @@ public class H2DataSource implements SimpleDataSource {
             }
         } catch (Exception ignored) {
         }
-    }
-
-    @Override
-    public long executeUpdate(String query) {
-        return 0;
     }
 
     static class ThreadLocalConnection extends ThreadLocal<Connection>{

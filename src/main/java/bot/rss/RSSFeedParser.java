@@ -35,7 +35,7 @@ public class RSSFeedParser {
             SyndFeedInput in = new SyndFeedInput();
             SyndFeed feed = in.build(new XmlReader(url));
             List<SyndEntry> entries = feed.getEntries();
-            entries.stream().forEach(entry -> {
+            entries.forEach(entry -> {
 
                 RSSMsg msg = new RSSMsg(entry.getUri(),
                     entry.getTitle(),
