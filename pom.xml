@@ -8,11 +8,14 @@
     <artifactId>podcast-bot</artifactId>
     <version>1.0.0</version>
     <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <telegram-bot-version>4.1.2</telegram-bot-version>
-        <rometools-version>1.5.0</rometools-version>
+        <rometools-version>1.12.0</rometools-version>
         <h2-version>1.4.197</h2-version>
         <ffmpeg-wrapper-version>0.6.2</ffmpeg-wrapper-version>
         <mp3spi-version>1.9.5-1</mp3spi-version>
+        <jsoup-version>1.7.2</jsoup-version>
     </properties>
 
     <dependencies>
@@ -29,9 +32,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.googlecode.soundlibs</groupId>
-            <artifactId>mp3spi</artifactId>
-            <version>${mp3spi-version}</version>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome-modules</artifactId>
+            <version>${rometools-version}</version>
         </dependency>
 
         <dependency>
@@ -40,6 +43,11 @@
             <version>${ffmpeg-wrapper-version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup-version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.h2database</groupId>

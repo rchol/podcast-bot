@@ -1,18 +1,26 @@
 package bot.rss.model;
 
+import java.util.List;
+
 public class RSSMsg {
 
     private String guid;
     private String author;
     private String title;
     private String enclosure;
+    private String link;
+    private List<String> hashtags;
 
-    public RSSMsg(String guid, String title, String author, String enclosure, String description) {
+
+    public RSSMsg(String guid, String title, String author, String enclosure, String description, String link, List<String> hashtags) {
         this.guid = guid;
         this.author = author;
         this.title = title;
         this.enclosure = enclosure;
         this.description = description;
+        this.hashtags = hashtags;
+        this.link = link;
+
     }
 
     private String description;
@@ -33,6 +41,21 @@ public class RSSMsg {
         this.description = description;
     }
 
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public List<String> getHashtags() {
+        return hashtags;
+    }
+
+    public void setHashtags(List<String> hashtags) {
+        this.hashtags = hashtags;
+    }
 
     public String getAuthor() {
         return author;

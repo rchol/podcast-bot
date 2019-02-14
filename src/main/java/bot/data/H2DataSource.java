@@ -14,7 +14,7 @@ public class H2DataSource implements SimpleDataSource {
 
     @Inject
     public H2DataSource(){
-        DataSource ds = JdbcConnectionPool.create("jdbc:h2:file:/Users/r.chernyshev/Desktop/db", "", "");
+        DataSource ds = JdbcConnectionPool.create("jdbc:h2:file:/Users/r.chernyshev/Projects/podcast-bot/db", "", "");
         this.thread = new ThreadLocalConnection(ds);
     }
 
