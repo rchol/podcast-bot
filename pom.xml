@@ -14,7 +14,6 @@
         <rometools-version>1.12.0</rometools-version>
         <h2-version>1.4.197</h2-version>
         <ffmpeg-wrapper-version>0.6.2</ffmpeg-wrapper-version>
-        <mp3spi-version>1.9.5-1</mp3spi-version>
         <jsoup-version>1.7.2</jsoup-version>
     </properties>
 
