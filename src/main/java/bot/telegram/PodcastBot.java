@@ -10,8 +10,12 @@ import bot.telegram.audio.AudioPreparator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,7 +30,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class PodcastBot extends TelegramLongPollingBot {
 
     private final List<RSSFeedParser> parsers;
-    private final List<RSSChannel> channelList = new ArrayList<>();
+    private final Set<RSSChannel> channelList = new HashSet<>();
     private final RepoIface repo;
     private static final String BOT_USERNAME = "";
     private static final String BOT_TOKEN = "6193544";
@@ -37,21 +41,30 @@ public class PodcastBot extends TelegramLongPollingBot {
     public PodcastBot() {
         repo = new Repo(new H2DataSource());
         parsers = new ArrayList<>();
-        channelList.add(new RSSChannel("http://javapubhouse.libsyn.com/rss"));
-        channelList.add(new RSSChannel("https://corecursive.libsyn.com/feed"));
-        channelList.forEach(channel -> parsers.add(new RSSFeedParser(channel, repo)));
+        repo.addChannel("http://javapubhouse.libsyn.com/rss", "java");
+        repo.addChannel("https://corecursive.libsyn.com/feed", "java");
+        try {
+            initChannels();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         String command = update.getMessage().getText();
+        if (command.startsWith("/add")) {
+            String[] elems = command.split(" ");
+            addChannel(elems[1]);
+            timer = null;
+        }
         if (timer == null) {
             timer = new Timer();
             timer.schedule(new PodcastTask(), 0, 28800L);
         }
     }
 
-    public void checkPodcasts() {
+    private void checkPodcasts() {
         parsers.forEach(parser -> {
             parser.readFeed().forEach(msg -> {
                 StringBuilder textPodcast = new StringBuilder();
@@ -77,8 +90,8 @@ public class PodcastBot extends TelegramLongPollingBot {
         sendMessage.setParseMode("HTML");
         sendMessage.setText(text);
         try {
-           Message sent = execute(sendMessage);
-           return sent.getMessageId();
+            Message sent = execute(sendMessage);
+            return sent.getMessageId();
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +104,7 @@ public class PodcastBot extends TelegramLongPollingBot {
         AtomicInteger idx = new AtomicInteger(1);
         filesToSend.forEach(filename -> {
             File file = new File(filename);
-            try (FileInputStream ain = new FileInputStream(file) ) {
+            try (FileInputStream ain = new FileInputStream(file)) {
                 SendAudio sendAudio = new SendAudio();
                 sendAudio.setChatId(CHANEL_ID);
                 String audioName = String.format("%s - %2d", rssMsg.getTitle(), idx.getAndIncrement());
@@ -105,7 +118,15 @@ public class PodcastBot extends TelegramLongPollingBot {
         });
     }
 
-    private String getHashtagsAsString(List<String> hashtags){
+    private void addChannel(String url) {
+        repo.addChannel(url);
+        RSSChannel channel = new RSSChannel(url);
+        channelList.add(channel);
+        parsers.add(new RSSFeedParser(channel, repo));
+        repo.updateRegistration(url);
+    }
+
+    private String getHashtagsAsString(List<String> hashtags) {
         StringBuilder builder = new StringBuilder();
         hashtags.forEach(tag -> builder.append("&#35")
             .append(tag)
@@ -114,7 +135,20 @@ public class PodcastBot extends TelegramLongPollingBot {
         return builder.toString().toLowerCase();
     }
 
-
+    private void initChannels() throws SQLException {
+        ResultSet allChannels = repo.getAllUnregisteredChannels();
+        while (allChannels.next()) {
+            String url = allChannels.getString("url");
+            String hashtags = allChannels.getString("hashtags");
+            RSSChannel channel = new RSSChannel(url);
+            channel.addHashtag(hashtags);
+            channelList.add(channel);
+        }
+        channelList.forEach(channel -> {
+            parsers.add(new RSSFeedParser(channel, repo));
+            repo.updateRegistration(channel.getUrl());
+        });
+    }
 
     @Override
     public String getBotUsername() {
@@ -126,7 +160,7 @@ public class PodcastBot extends TelegramLongPollingBot {
         return BOT_TOKEN;
     }
 
-    private class PodcastTask extends TimerTask{
+    private class PodcastTask extends TimerTask {
 
         @Override
         public void run() {

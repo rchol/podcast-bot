@@ -14,9 +14,13 @@ public class RSSChannel {
     }
 
     public void addHashtag(String newHashtag){
-        newHashtag = newHashtag.replaceAll("[;/:*?\"<>|&' ]", "_");
-        newHashtag = newHashtag.replaceAll("_{2,}", "_");
-        this.hashtag.add(newHashtag.toLowerCase());
+        String[] hashtags = newHashtag.split(",");
+        Arrays.stream(hashtags).forEach(tag -> {
+            tag = tag.replaceAll("[;/:*?\"<>|&' ]", "_");
+            tag = tag.replaceAll("_{2,}", "_");
+            this.hashtag.add(tag.toLowerCase());
+        });
+
     }
 
     public void setHashtag(String[] hashtags) {
