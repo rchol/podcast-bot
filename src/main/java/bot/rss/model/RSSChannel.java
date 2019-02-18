@@ -6,11 +6,11 @@ import java.util.List;
 
 public class RSSChannel {
     private final String url;
-
     private List<String> hashtag;
 
     public RSSChannel(String url) {
         this.url = url;
+        this.hashtag = new ArrayList<>();
     }
 
     public void addHashtag(String newHashtag){
@@ -21,6 +21,10 @@ public class RSSChannel {
             this.hashtag.add(tag.toLowerCase());
         });
 
+    }
+
+    public void addHashtag(String[] tags){
+        Arrays.stream(tags).forEach(this::addHashtag);
     }
 
     public void setHashtag(String[] hashtags) {

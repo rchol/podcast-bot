@@ -5,14 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcConnectionPool;
 
 public class H2DataSource implements SimpleDataSource {
     private final ThreadLocalConnection thread;
 
-    @Inject
     public H2DataSource(){
         DataSource ds = JdbcConnectionPool.create("jdbc:h2:file:/Users/r.chernyshev/Projects/podcast-bot/db", "", "");
         this.thread = new ThreadLocalConnection(ds);
